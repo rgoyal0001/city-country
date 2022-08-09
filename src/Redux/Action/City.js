@@ -24,5 +24,39 @@ const getCities=()=>
         }
     }
 
+const sortByPopu=(order,country)=>async(dispatch)=>{
+    try {
+        dispatch(loadingCities());
+        let res=await fetch('http://localhost:8080/cities');
+        let data=res.json();
+        if(order=='ascending'){
+            data.sort((a,b)=>a.population-b.population);
+        }
+        if(order=='decending'){
+            data.sort((a,b)=>b.population-a.population);
+        }
+        if(country){
+            data=data.filter(item=>item.country===country)
+        }
+        dispatch(sucessCities(data));
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-export {loadingCities, sucessCities, getCities}
+const filterByCountry=(country)=>async(dispatch)=>{
+    try {
+        if(!country){
+            dispatch(getCities());
+            return;
+        }
+        dispatch(loadingCities());
+        let res=await fetch('http://localhost:8080/cities?country='+country);
+        let data=res.json();
+        dispatch(sucessCities(data));
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export {loadingCities, sucessCities, getCities, sortByPopu, filterByCountry}
